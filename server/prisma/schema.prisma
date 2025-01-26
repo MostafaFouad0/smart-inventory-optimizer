@@ -70,7 +70,7 @@ model Category {
     id Int @id @default(autoincrement())
     name String @unique 
     description String?
-    hasExpiryDate DateTime 
+    hasExpiryDate Boolean 
     Image String?
     Porduct Product[]
 }
