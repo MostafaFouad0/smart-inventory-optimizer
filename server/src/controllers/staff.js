@@ -1,6 +1,5 @@
 const staffSchema = require('../validators/staff');
 const bcrypt = require('bcrypt');
-const jwt = require('jsonwebtoken');
 const prisma = require('../../prisma/prisma');
 
 async function createStaff(req, res, next){
