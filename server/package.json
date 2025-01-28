@@ -4,7 +4,7 @@
   "description": "The Smart Inventory Optimizer is an AI-powered system designed to enhance inventory management and decision-making for inventories.",
   "main": "server.js",
   "scripts": {
-    "prod": "node server.js",
+    "prod": "node src/server.js",
     "dev": "nodemon src/server.js"
   },
   "repository": {

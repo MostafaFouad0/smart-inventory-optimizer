@@ -1,11 +1,12 @@
 const express = require('express');
-const error = require('../middlewares/error')
+const endpoints = require('../utils/endpoints');
+const error = require('../middlewares/error');
 const admin = require('../routes/admin');
 const staff = require('../routes/staff');
 
 module.exports = function (app) {
     app.use(express.json());
-    app.use('/api/admin', admin);
-    app.use('/api/staff',staff)
-    app.use('/api/', error); //make sure this is the last route always
+    app.use(endpoints.ADMIN, admin);
+    app.use(endpoints.STAFF,staff)
+    app.use(error); //make sure this is the last route always
 };

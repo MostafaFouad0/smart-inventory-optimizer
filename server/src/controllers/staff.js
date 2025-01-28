@@ -6,7 +6,7 @@ const prisma = require('../../prisma/prisma');
 async function createStaff(req, res, next){
     try{
         const staffData = req.body.staff;
-        const adminData = req.user
+        const adminData = req.user;
     //validating data credentials
         let { error } = staffSchema.validate(staffData);
         if (error) return res.status(400).json({message: error.details[0].message});
@@ -33,18 +33,10 @@ async function createStaff(req, res, next){
                 businessId: adminData.businessId,
             },
         });
-        
-    ///JWT
-        const token = jwt.sign(
-            { userId: staff.id, email: staff.email, isAdmin: staff.isAdmin, businessId: staff.businessId },
-            process.env.JWT_SECRET,
-            { expiresIn: process.env.JWT_EXPIRATION || '1h'  }
-        );
 
     ///end the response with the JWT attached to the header
         res
             .status(201)
-            .set('Authorization', `Bearer ${token}`)
             .json({
                 message: 'Staff created successfully',
                 Staff: {
@@ -65,7 +57,7 @@ async function deleteStaff(req, res, next) {
 
     // Validate the user ID
     if (isNaN(userId)) {
-        return res.status(400).send({ message: 'Invalid user ID' });
+        return res.status(400).json({ message: 'Invalid user ID' });
     }
 
     try {
@@ -75,11 +67,11 @@ async function deleteStaff(req, res, next) {
         });
 
         if (!user) {
-            return res.status(404).send({ message: 'User not found' });
+            return res.status(404).json({ message: 'User not found' });
         }
 
         if (user.isAdmin) {
-            return res.status(403).send({ message: 'Cannot delete an admin user' });
+            return res.status(403).json({ message: 'Cannot delete an admin user' });
         }
 
         // Delete the user
