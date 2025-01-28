@@ -1,5 +1,4 @@
 const staffSchema = require('../validators/staff');
-const businessSchema = require('../validators/business');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const prisma = require('../../prisma/prisma');
@@ -42,10 +41,10 @@ async function createStaff(req, res, next){
             { expiresIn: process.env.JWT_EXPIRATION || '1h'  }
         );
 
-    // Step 6: Send the response with the JWT attached to the header
+    ///end the response with the JWT attached to the header
         res
             .status(201)
-            .set('Authorization', `Bearer ${token}`) // Attach the token to the header
+            .set('Authorization', `Bearer ${token}`)
             .json({
                 message: 'Staff created successfully',
                 Staff: {
@@ -62,7 +61,7 @@ async function createStaff(req, res, next){
     }
 }
 async function deleteStaff(req, res, next) {
-    const userId = parseInt(req.params.userId); // Extract the user ID from the route parameters
+    const userId = parseInt(req.params.userId);
 
     // Validate the user ID
     if (isNaN(userId)) {
@@ -99,7 +98,12 @@ async function listStaff(req, res, next){
     const sortOrder = req.query.sortOrder || 'asc';
     try{
         const users = await prisma.User.findMany({
-            where : {isAdmin:false},
+            where : {
+                AND: [
+                    { isAdmin: false },
+                    { businessId: req.user.businessId }
+                ]
+            },
             skip: ((page - 1) * 5),
             take: 5,
             orderBy: { [orderBy]:sortOrder },
