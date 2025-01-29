@@ -100,7 +100,7 @@ async function listStaff(req, res, next){
             orderBy: { [orderBy]:sortOrder },
             select: {id:true,name:true,email:true,username:true,phoneNumber:true, createdAt:true}
         });
-        res.status(200).send(users);
+        res.status(200).json({message: "Success", data: users});
     }catch(ex){
         next(ex);
     }
