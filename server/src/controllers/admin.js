@@ -57,7 +57,7 @@ async function createAdmin(req, res, next){
         
     ///JWT
         const token = jwt.sign(
-            { userId: admin.id, email: admin.email, isAdmin: admin.isAdmin, businessId: admin.businessId },
+            { userId: admin.id,username: admin.username, email: admin.email, isAdmin: admin.isAdmin, businessId: admin.businessId },
             process.env.JWT_SECRET,
             { expiresIn: process.env.JWT_EXPIRATION || '1h'  }
         );
