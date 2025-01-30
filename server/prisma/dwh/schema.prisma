@@ -1,6 +1,7 @@
 datasource db {
-    provider = "postgresql"
-    url      = env("DWH_DATABASE_URL")
+    provider  = "postgresql"
+    url       = env("DWH_URL")
+    directUrl = env("DWH_DIRECT_URL")
 }
 
 generator client {
