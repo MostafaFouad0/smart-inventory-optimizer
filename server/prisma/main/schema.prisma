@@ -1,25 +1,20 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
 
 generator client {
   provider = "prisma-client-js"
-  output   = "../generated/client/main"
-}
-
-datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+  output   = "../../node_modules/@prisma/client/main"
 }
 
 model Business {
   id                String         @id @default(uuid())
   name              String
   establishmentDate DateTime
-  description       String
-  image             String
+  description       String?
+  image             String?
   createdAt         DateTime       @default(now())
   User              User[]
   Batch             Batch[]
@@ -29,12 +24,12 @@ model Business {
 
 model User {
   id               Int      @id @default(autoincrement())
-  name             String
-  email            String
+  name             String?
+  email            String   @unique
   username         String   @unique
   password         String
-  phoneNumber      String
-  admin            Boolean
+  phoneNumber      String?  @unique
+  isAdmin          Boolean
   createdAt        DateTime @default(now())
   businessRelation Business @relation(fields: [businessId], references: [id])
   businessId       String
