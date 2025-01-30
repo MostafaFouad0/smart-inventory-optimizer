@@ -1,0 +1,92 @@
+datasource db {
+    provider = "postgresql"
+    url      = env("DWH_DATABASE_URL")
+}
+
+generator client {
+    provider = "prisma-client-js"
+    output   = "../../node_modules/@prisma/client/dwh"
+}
+
+model BusinessDimension {
+    businessId       String                @id @default(uuid())
+    businessName     String
+    productRevenues  ProductRevenueFact[]
+    categoryRevenues CategoryRevenueFact[]
+    productPrices    BatchPrice[]
+}
+
+model CategoryDimension {
+    categoryId       Int                   @id @default(autoincrement())
+    categoryName     String
+    hasExpiryDate    Boolean               @default(false)
+    products         ProductDimension[]
+    categoryRevenues CategoryRevenueFact[]
+}
+
+model ProductDimension {
+    productId         Int                  @id @default(autoincrement())
+    name              String
+    categoryId        Int
+    nextExpiryDateId  Int?
+    nextExpiryDate    DateDimension?       @relation(fields: [nextExpiryDateId], references: [date_id])
+    CategoryDimension CategoryDimension    @relation(fields: [categoryId], references: [categoryId])
+    productRevenues   ProductRevenueFact[]
+    prices            BatchPrice[]
+}
+
+model ProductRevenueFact {
+    productId      Int
+    businessId     String
+    dateId         Int
+    revenueAmount  Float
+    totalUnitsSold Int
+
+    date     DateDimension     @relation(fields: [dateId], references: [date_id])
+    business BusinessDimension @relation(fields: [businessId], references: [businessId])
+    product  ProductDimension  @relation(fields: [productId], references: [productId])
+
+    @@id([productId, businessId])
+}
+
+model CategoryRevenueFact {
+    businessId       String
+    categoryId       Int
+    date_id          Int
+    revenue_amount   Float
+    total_units_sold Int
+
+    date     DateDimension     @relation(fields: [date_id], references: [date_id])
+    business BusinessDimension @relation(fields: [businessId], references: [businessId])
+    category CategoryDimension @relation(fields: [categoryId], references: [categoryId])
+
+    @@id([businessId, categoryId])
+}
+
+model BatchPrice {
+    productId      Int
+    businessId     String
+    dateId         Int
+    purchase_price Float
+
+    date     DateDimension     @relation(fields: [dateId], references: [date_id])
+    business BusinessDimension @relation(fields: [businessId], references: [businessId])
+    product  ProductDimension  @relation(fields: [productId], references: [productId])
+
+    @@id([productId, businessId])
+}
+
+model DateDimension {
+    date_id   Int      @id @default(autoincrement())
+    full_date DateTime
+    day       Int
+    week      Int
+    month     Int
+    quarter   Int
+    year      Int
+
+    product_revenues  ProductRevenueFact[]
+    category_revenues CategoryRevenueFact[]
+    batch_prices      BatchPrice[]
+    expiring_products ProductDimension[]
+}
