@@ -43,7 +43,7 @@ model ProductDimension {
 model ProductRevenueFact {
     productId      Int
     businessId     String
-    dateId         Int
+    dateId         Int // granuality: daily
     revenueAmount  Decimal
     totalUnitsSold Int
 
@@ -57,7 +57,7 @@ model ProductRevenueFact {
 model CategoryRevenueFact {
     businessId     String
     categoryId     Int
-    dateId         Int
+    dateId         Int // granuality: daily
     revenueAmount  Decimal
     totalUnitsSold Int
 
@@ -101,7 +101,7 @@ model DateDimension {
 model InventoryFact {
     productId    Int
     businessId   String
-    dateId       Int
+    dateId       Int // granuality: daily
     currentStock Int
 
     business BusinessDimension @relation(fields: [businessId], references: [businessId])
