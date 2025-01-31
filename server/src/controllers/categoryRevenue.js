@@ -1,9 +1,7 @@
 const dwhClient = require("../../prisma/dwh/client");
 
 async function categoryRevenueController(req, res) {
-  // TODO: check that the user sent this request is owner/staff in the business
-
-  const businessId = req.params.businessId;
+  const businessId = req.user.businessId;
 
   try {
     const result = await dwhClient.categoryRevenueFact.groupBy({
