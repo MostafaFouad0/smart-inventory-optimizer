@@ -10,6 +10,9 @@ const getProdcutsRevenues = async (req, res) => {
     where: {
       businessId: bussinessId,
     },
+    orderBy: {
+      revenueAmount: "desc",
+    },
     select: {
       revenueAmount: true,
       totalUnitsSold: true,
