@@ -15,6 +15,8 @@ model BusinessDimension {
     productRevenues  ProductRevenueFact[]
     categoryRevenues CategoryRevenueFact[]
     productPrices    BatchPrice[]
+    inventoryLevels  InventoryFact[]
+    transactions     TransactionFact[]
 }
 
 model CategoryDimension {
@@ -30,20 +32,22 @@ model ProductDimension {
     name              String
     categoryId        Int
     nextExpiryDateId  Int?
-    nextExpiryDate    DateDimension?       @relation(fields: [nextExpiryDateId], references: [date_id])
+    nextExpiryDate    DateDimension?       @relation(fields: [nextExpiryDateId], references: [dateId])
     CategoryDimension CategoryDimension    @relation(fields: [categoryId], references: [categoryId])
     productRevenues   ProductRevenueFact[]
     prices            BatchPrice[]
+    InventoryFact     InventoryFact[]
+    transactions      TransactionFact[]
 }
 
 model ProductRevenueFact {
     productId      Int
     businessId     String
-    dateId         Int
-    revenueAmount  Float
+    dateId         Int // granuality: daily
+    revenueAmount  Decimal
     totalUnitsSold Int
 
-    date     DateDimension     @relation(fields: [dateId], references: [date_id])
+    date     DateDimension     @relation(fields: [dateId], references: [dateId])
     business BusinessDimension @relation(fields: [businessId], references: [businessId])
     product  ProductDimension  @relation(fields: [productId], references: [productId])
 
@@ -51,13 +55,13 @@ model ProductRevenueFact {
 }
 
 model CategoryRevenueFact {
-    businessId       String
-    categoryId       Int
-    date_id          Int
-    revenue_amount   Float
-    total_units_sold Int
+    businessId     String
+    categoryId     Int
+    dateId         Int // granuality: daily
+    revenueAmount  Decimal
+    totalUnitsSold Int
 
-    date     DateDimension     @relation(fields: [date_id], references: [date_id])
+    date     DateDimension     @relation(fields: [dateId], references: [dateId])
     business BusinessDimension @relation(fields: [businessId], references: [businessId])
     category CategoryDimension @relation(fields: [categoryId], references: [categoryId])
 
@@ -68,9 +72,9 @@ model BatchPrice {
     productId      Int
     businessId     String
     dateId         Int
-    purchase_price Float
+    purchase_price Decimal
 
-    date     DateDimension     @relation(fields: [dateId], references: [date_id])
+    date     DateDimension     @relation(fields: [dateId], references: [dateId])
     business BusinessDimension @relation(fields: [businessId], references: [businessId])
     product  ProductDimension  @relation(fields: [productId], references: [productId])
 
@@ -78,16 +82,46 @@ model BatchPrice {
 }
 
 model DateDimension {
-    date_id   Int      @id @default(autoincrement())
-    full_date DateTime
-    day       Int
-    week      Int
-    month     Int
-    quarter   Int
-    year      Int
+    dateId   Int      @id @default(autoincrement())
+    fullDate DateTime
+    day      Int
+    week     Int
+    month    Int
+    quarter  Int
+    year     Int
 
-    product_revenues  ProductRevenueFact[]
-    category_revenues CategoryRevenueFact[]
-    batch_prices      BatchPrice[]
-    expiring_products ProductDimension[]
+    productRevenues  ProductRevenueFact[]
+    categoryRevenues CategoryRevenueFact[]
+    batchPrices      BatchPrice[]
+    expiringProducts ProductDimension[]
+    inventorylevels  InventoryFact[]
+    transactions     TransactionFact[]
+}
+
+model InventoryFact {
+    productId    Int
+    businessId   String
+    dateId       Int // granuality: daily
+    currentStock Int
+
+    business BusinessDimension @relation(fields: [businessId], references: [businessId])
+    product  ProductDimension  @relation(fields: [productId], references: [productId])
+    date     DateDimension     @relation(fields: [dateId], references: [dateId])
+
+    @@id([productId, businessId, dateId])
+}
+
+model TransactionFact {
+    transactionId Int     @id @default(autoincrement())
+    businessId    String
+    productId     Int
+    dateId        Int
+    amount        Int
+    discount      Decimal
+    sellingPrice  Decimal
+    purchasePrice Decimal
+
+    business BusinessDimension @relation(fields: [businessId], references: [businessId])
+    product  ProductDimension  @relation(fields: [productId], references: [productId])
+    date     DateDimension     @relation(fields: [dateId], references: [dateId])
 }
