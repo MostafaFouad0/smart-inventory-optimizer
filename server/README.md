@@ -31,9 +31,15 @@ The server requires a .env file to store sensitive configuration details. Follow
 1 - Create a `.env` file in the server folder
 2 - Add the required fields:
 
-```
-FIELD_1=value1
-FIELD_2=value2
+> DWH --> (data warehouse)
+
+```.env
+MAIN_DB_DIRECT_URL
+MAIN_DB_URL # connection string for migrations only
+DWH_DIRECT_URL
+DWH_URL # connection string for migrations only
+PORT
+JWT_SECRET
 ```
 
 ### Database Setup
