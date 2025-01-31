@@ -40,11 +40,17 @@ async function forgetPassword(req, res, next){
             text:  `frontend-page-forResetPassword${user.id}/${token}`,
             };
         
-            transporter.sendMail(mailOptions, function(error, info){
+            transporter.sendMail(mailOptions, function(error){
             if (error) {
                 console.log(error);
             } else {
-                return res.send({status :"Succes"});
+                ///
+                return  res
+                .status(201)
+                .set('Authorization', `Bearer ${token}`) 
+                .json({
+                    message: "Succes",
+            });
             }
             });
     } catch (ex) {
