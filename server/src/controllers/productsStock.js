@@ -1,6 +1,14 @@
 const dwhClient = require("../../prisma/dwh/client");
 const winston = require("winston");
+/*
+raw sql query to retrieve products with low current stock levels.
 
+SELECT "InventoryFact"."currentStock","ProductDimension".name  
+FROM "InventoryFact" 
+JOIN "ProductDimension" 
+ON "InventoryFact"."productId" = "ProductDimension"."productId" 
+WHERE "InventoryFact"."businessId" = ${businessId} AND "InventoryFact"."currentStock" <=20;
+*/
 const getProductsStock = async (req, res, next) => {
   const page = +req.query.page || 1;
   const limit = +req.query.limit || 10;
