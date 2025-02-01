@@ -1,5 +1,12 @@
 const dwhClient = require("../../prisma/dwh/client");
-
+/*
+raw sql query
+SELECT "ProductDimension".name, "ProductRevenueFact"."revenueAmount", "ProductRevenueFact"."totalUnitsSold" 
+FROM "ProductRevenueFact"
+JOIN "ProductDimension" 
+ON "ProductRevenueFact"."productId" = "ProductDimension"."productId"
+WHERE "ProductRevenueFact"."businessId" = ${businessId}
+*/
 const getProdcutsRevenues = async (req, res, next) => {
   const page = +req.query.page || 1;
   const limit = +req.query.limit || 10;
