@@ -12,6 +12,8 @@ const getProdcutsRevenues = async (req, res, next) => {
   const page = +req.query.page || 1;
   const limit = +req.query.limit || 10;
   const bussinessId = req.user.businessId;
+  const order = req.query.orderBy || "desc";
+
   try {
     const results = await dwhClient.productRevenueFact.findMany({
       skip: (page - 1) * limit,
@@ -20,7 +22,7 @@ const getProdcutsRevenues = async (req, res, next) => {
         businessId: bussinessId,
       },
       orderBy: {
-        revenueAmount: "desc",
+        revenueAmount: order,
       },
       select: {
         revenueAmount: true,

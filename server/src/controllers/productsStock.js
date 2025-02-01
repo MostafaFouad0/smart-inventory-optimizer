@@ -12,6 +12,7 @@ WHERE "InventoryFact"."businessId" = ${businessId} AND "InventoryFact"."currentS
 const getProductsStock = async (req, res, next) => {
   const page = +req.query.page || 1;
   const limit = +req.query.limit || 10;
+  const order = req.query.orderBy || "asc";
   const bussinessId = req.user.businessId;
   try {
     const results = await dwhClient.inventoryFact.findMany({
@@ -31,7 +32,7 @@ const getProductsStock = async (req, res, next) => {
         },
       },
       orderBy: {
-        currentStock: "asc",
+        currentStock: order,
       },
     });
     return res.status(200).json({
