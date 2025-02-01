@@ -1,6 +1,6 @@
 const dwhClient = require("../../prisma/dwh/client");
 /*
-raw sql query to get the revenue of a product across all time for a specific business
+raw sql query to get the revenue of all product across all time for a specific business
 
 SELECT "ProductDimension".name, "ProductRevenueFact"."revenueAmount", "ProductRevenueFact"."totalUnitsSold" 
 FROM "ProductRevenueFact"
