@@ -1,8 +1,14 @@
 const winston = require("winston");
+const fs = require("fs");
+const path = require("path");
 const { combine, timestamp, printf, colorize, errors, json, prettyPrint } =
   winston.format;
 
-// Custom log format for console output
+const logDir = path.join(__dirname, "../../logs");
+if (!fs.existsSync(logDir)) {
+  fs.mkdirSync(logDir, { recursive: true });
+}
+
 const consoleFormat = printf(({ level, message, timestamp, stack }) => {
   return `${timestamp} [${level}]: ${stack || message}`;
 });
@@ -10,42 +16,42 @@ const consoleFormat = printf(({ level, message, timestamp, stack }) => {
 module.exports = function () {
   winston.configure({
     format: combine(
-      timestamp({ format: "YYYY-MM-DD HH:mm:ss" }), // Add timestamp
-      errors({ stack: true }), // Include stack traces for errors
-      json(), // Default format for file logs
-      prettyPrint() // Pretty-print JSON objects
+      timestamp({ format: "YYYY-MM-DD HH:mm:ss" }),
+      errors({ stack: true }),
+      json(),
+      prettyPrint()
     ),
     transports: [
-      // Log errors to a file
       new winston.transports.File({
-        filename: "logs/error.log",
+        filename: path.join(logDir, "error.log"),
         level: "error",
       }),
-      // Log debug and above to the console
       new winston.transports.Console({
         level: "debug",
         format: combine(
           colorize(), // Colorize console output
-          timestamp({ format: "YYYY-MM-DD HH:mm:ss" }), // Add timestamp
-          consoleFormat // Use custom console format
+          timestamp({ format: "YYYY-MM-DD HH:mm:ss" }),
+          consoleFormat
         ),
       }),
     ],
   });
 
-  // Handle uncaught exceptions
   winston.exceptions.handle(
     new winston.transports.Console({
       format: combine(colorize(), timestamp(), consoleFormat),
     }),
-    new winston.transports.File({ filename: "logs/uncaughtException.log" })
+    new winston.transports.File({
+      filename: path.join(logDir, "uncaughtException.log"),
+    })
   );
 
-  // Handle uncaught promise rejections
   winston.rejections.handle(
     new winston.transports.Console({
       format: combine(colorize(), timestamp(), consoleFormat),
     }),
-    new winston.transports.File({ filename: "logs/uncaughtRejection.log" })
+    new winston.transports.File({
+      filename: path.join(logDir, "uncaughtRejection.log"),
+    })
   );
 };
