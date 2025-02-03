@@ -1,6 +1,6 @@
 const resetPasswordSchema = require("../validators/resetPassword");
 const bcrypt = require("bcrypt");
-const prisma = require("../../prisma/prisma");
+const prisma = require("../../prisma/main/client");
 
 async function resetPassword(req, res, next) {
   const userData = req.body;

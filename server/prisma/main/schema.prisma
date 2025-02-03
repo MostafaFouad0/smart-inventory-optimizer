@@ -1,0 +1,95 @@
+datasource db {
+  provider  = "postgresql"
+  url       = env("MAIN_DB_URL")
+  directUrl = env("MAIN_DB_DIRECT_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../../node_modules/@prisma/client/main"
+}
+
+model Business {
+  id                String         @id @default(uuid())
+  name              String
+  establishmentDate DateTime
+  description       String?
+  image             String?
+  createdAt         DateTime       @default(now())
+  User              User[]
+  Batch             Batch[]
+  CSVStatus         CSVStatus[]
+  Notification      Notification[]
+}
+
+model User {
+  id               Int      @id @default(autoincrement())
+  name             String?
+  email            String   @unique
+  username         String   @unique
+  password         String
+  phoneNumber      String?  @unique
+  isAdmin          Boolean
+  createdAt        DateTime @default(now())
+  businessRelation Business @relation(fields: [businessId], references: [id])
+  businessId       String
+}
+
+model CSVStatus {
+  id               Int      @id @default(autoincrement())
+  status           String
+  uploadedDate     DateTime
+  path             String
+  businessRelation Business @relation(fields: [businessId], references: [id])
+  businessId       String
+}
+
+model Notification {
+  id               Int      @id @default(autoincrement())
+  date             DateTime
+  description      String
+  title            String
+  businessRelation Business @relation(fields: [businessId], references: [id])
+  businessId       String
+}
+
+model Transaction {
+  id            Int      @id @default(autoincrement())
+  date          DateTime @default(now())
+  amount        Int
+  discount      Decimal  @default(0.0)
+  batchRelation Batch    @relation(fields: [batchId], references: [id])
+  batchId       Int
+}
+
+model Category {
+  id            Int       @id @default(autoincrement())
+  name          String    @unique
+  description   String?
+  hasExpiryDate Boolean
+  Image         String?
+  Porduct       Product[]
+}
+
+model Product {
+  id               Int      @id @default(autoincrement())
+  name             String   @unique
+  categoryRelation Category @relation(fields: [categoryId], references: [id])
+  categoryId       Int
+  Batch            Batch[]
+}
+
+model Batch {
+  id               Int           @id @default(autoincrement())
+  expiryDate       DateTime
+  sellingPrice     Int
+  costOfGoods      Int
+  remQuantity      Int
+  soldQuantity     Int
+  dateOfReceipt    DateTime      @default(now())
+  businessRelation Business      @relation(fields: [businessId], references: [id])
+  businessId       String
+  productRelation  Product       @relation(fields: [productId], references: [id])
+  productId        Int
+  Transaction      Transaction[]
+}
