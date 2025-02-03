@@ -11,7 +11,8 @@
     "migrate:maindb": "npx prisma migrate dev --schema=./prisma/main/schema.prisma --create-only",
     "migrate:dwh": "npx prisma migrate dev --schema=./prisma/dwh/schema.prisma --create-only",
     "deploy:maindb": "npx prisma migrate deploy --schema=./prisma/main/schema.prisma",
-    "deploy:dwh": "npx prisma migrate deploy --schema=./prisma/dwh/schema.prisma"
+    "deploy:dwh": "npx prisma migrate deploy --schema=./prisma/dwh/schema.prisma",
+    "postinstall": "npm run generate:maindb && npm run generate:dwh"
   },
   "repository": {
     "type": "git",
