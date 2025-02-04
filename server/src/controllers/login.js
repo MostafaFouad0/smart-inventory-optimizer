@@ -1,7 +1,7 @@
 const loginSchema = require("../validators/login");
 const bcrypt = require("bcrypt");
-const jwt = require("jsonwebtoken");
 const prisma = require("../../prisma/main/client");
+const { generateToken } = require("../utils/auth");
 
 async function login(req, res, next) {
   const userData = req.body;
@@ -29,17 +29,7 @@ async function login(req, res, next) {
     }
 
     ///JWT
-    const token = jwt.sign(
-      {
-        userId: user.id,
-        username: user.username,
-        email: user.email,
-        isAdmin: user.isAdmin,
-        businessId: user.businessId,
-      },
-      process.env.JWT_SECRET,
-      { expiresIn: process.env.JWT_EXPIRATION || "1h" }
-    );
+    const token = generateToken(user);
 
     res
       .status(200)

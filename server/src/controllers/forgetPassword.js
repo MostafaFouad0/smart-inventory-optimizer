@@ -1,8 +1,7 @@
-const bcrypt = require("bcrypt");
-const jwt = require("jsonwebtoken");
 const prisma = require("../../prisma/main/client");
 const nodemailer = require("nodemailer");
 const winston = require("winston");
+const { generateToken } = require("../utils/auth");
 
 async function forgetPassword(req, res, next) {
   try {
@@ -14,17 +13,8 @@ async function forgetPassword(req, res, next) {
       return res
         .status(404)
         .json({ message: "We could not find user with given email" });
-    const token = jwt.sign(
-      {
-        userId: user.id,
-        username: user.username,
-        email: user.email,
-        isAdmin: user.isAdmin,
-        businessId: user.businessId,
-      },
-      process.env.JWT_SECRET,
-      { expiresIn: process.env.JWT_EXPIRATION || "10m" }
-    );
+
+    const token = generateToken(user, "10m");
 
     let transporter = nodemailer.createTransport({
       service: "gmail",

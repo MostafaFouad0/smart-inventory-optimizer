@@ -1,9 +1,6 @@
 const adminSchema = require("../validators/admin");
 const businessSchema = require("../validators/business");
-const bcrypt = require("bcrypt");
-const jwt = require("jsonwebtoken");
 const prisma = require("../../prisma/main/client");
-const winston = require("winston");
 const { hashPassword, generateToken } = require("../utils/auth");
 
 async function createAdmin(req, res, next) {
@@ -22,7 +19,7 @@ async function createAdmin(req, res, next) {
       return res.status(400).json({ message: error.details[0].message });
 
     //checking if the user already exists
-    let existingUser = await prisma.User.findFirst({
+    const existingUser = await prisma.User.findFirst({
       where: {
         OR: [
           { email: adminData.email },
