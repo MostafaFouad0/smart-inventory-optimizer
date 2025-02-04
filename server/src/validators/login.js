@@ -1,8 +1,9 @@
-const Joi = require('joi');
-//TODO: these constrains are arbitary so fix them
+const Joi = require("joi");
+const base = require("./userBase");
+
 const loginSchema = Joi.object({
-  username:Joi.string().required(),
-  password: Joi.string().min(8).required(),
+  username: base.username,
+  password: base.password,
 });
 
 module.exports = loginSchema;

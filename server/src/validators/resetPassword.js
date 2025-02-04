@@ -1,5 +1,6 @@
 const Joi = require("joi");
-//TODO: these constrains are arbitary so fix them
+const base = require("./userBase");
+
 const resetPasswordSchema = Joi.object({
   password: Joi.string().min(8).required().messages({
     "string.base": "Password must be a valid string",
