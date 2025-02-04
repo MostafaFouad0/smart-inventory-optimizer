@@ -61,6 +61,7 @@ async function createAdmin(req, res, next) {
     const token = jwt.sign(
       {
         userId: admin.id,
+        username: admin.username,
         email: admin.email,
         isAdmin: admin.isAdmin,
         businessId: admin.businessId,
