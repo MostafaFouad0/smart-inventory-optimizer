@@ -4,6 +4,7 @@ const authenticate = require("../middlewares/authenticate");
 const loginController = require("../controllers/login");
 const forgetPasswordController = require("../controllers/forgetPassword");
 const resetPasswordController = require("../controllers/resetPassword");
+const adminController = require("../controllers/admin");
 
 router.post("/login", loginController.login);
 router.post("/forget-password", forgetPasswordController.forgetPassword);
@@ -12,5 +13,6 @@ router.post(
   [authenticate],
   resetPasswordController.resetPassword
 );
+router.post("/register", adminController.createAdmin);
 
 module.exports = router;
