@@ -3,11 +3,13 @@ const businessSchema = require("../validators/business");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const prisma = require("../../prisma/main/client");
+const winston = require("winston");
 
 async function createAdmin(req, res, next) {
   try {
-    const adminData = req.body.admin;
-    const businessData = req.body.business;
+    const { admin: adminData, business: businessData } = req.body;
+    if (!adminData || !businessData)
+      return res.status(400).json({ message: "Missing data" });
 
     //validating data credentials
     let { error } = adminSchema.validate(adminData);
@@ -19,11 +21,25 @@ async function createAdmin(req, res, next) {
       return res.status(400).json({ message: error.details[0].message });
 
     //checking if the user already exists
-    let existingAdmin = await prisma.User.findUnique({
-      where: { email: adminData.email },
+    let existingUser = await prisma.User.findFirst({
+      where: {
+        OR: [
+          { email: adminData.email },
+          { username: adminData.username },
+          { phoneNumber: adminData.phoneNumber },
+        ],
+      },
     });
-    if (existingAdmin)
-      return res.status(400).json({ message: "admin already exists" });
+    if (existingUser) {
+      let duplicateField;
+      if (existingUser.email === adminData.email) duplicateField = "email";
+      else if (existingUser.username === adminData.username)
+        duplicateField = "username";
+      else duplicateField = "phone number";
+      return res.status(400).json({
+        message: `User with this ${duplicateField} already exists`,
+      });
+    }
 
     //hasing the password
     const saltRounds = 10;
@@ -70,7 +86,7 @@ async function createAdmin(req, res, next) {
       { expiresIn: process.env.JWT_EXPIRATION || "1h" }
     );
 
-    // Step 6: Send the response with the JWT attached to the header
+    //Send the response with the JWT attached to the header
     res
       .status(201)
       .set("Authorization", `Bearer ${token}`) // Attach the token to the header

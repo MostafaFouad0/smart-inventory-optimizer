@@ -2,6 +2,7 @@ const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const prisma = require("../../prisma/main/client");
 const nodemailer = require("nodemailer");
+const winston = require("winston");
 
 async function forgetPassword(req, res, next) {
   try {
@@ -43,7 +44,7 @@ async function forgetPassword(req, res, next) {
 
     transporter.sendMail(mailOptions, function (error) {
       if (error) {
-        console.log(error);
+        winston.error(error);
       } else {
         /// just for testing  -> we won't send token !!
         return res.status(201).set("Authorization", `Bearer ${token}`).json({
