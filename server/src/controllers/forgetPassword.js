@@ -1,5 +1,4 @@
 const bcrypt = require("bcrypt");
-const crypto = require("crypto");
 const jwt = require("jsonwebtoken");
 const prisma = require("../../prisma/main/client");
 const nodemailer = require("nodemailer");
@@ -13,7 +12,7 @@ async function forgetPassword(req, res, next) {
     if (!user)
       return res
         .status(404)
-        .json({ message: "WE could not find user with given email" });
+        .json({ message: "We could not find user with given email" });
     const token = jwt.sign(
       {
         userId: user.id,
@@ -23,7 +22,7 @@ async function forgetPassword(req, res, next) {
         businessId: user.businessId,
       },
       process.env.JWT_SECRET,
-      { expiresIn: process.env.JWT_EXPIRATION || "1h" }
+      { expiresIn: process.env.JWT_EXPIRATION || "10m" }
     );
 
     let transporter = nodemailer.createTransport({
@@ -46,9 +45,9 @@ async function forgetPassword(req, res, next) {
       if (error) {
         console.log(error);
       } else {
-        ///
+        /// just for testing  -> we won't send token !!
         return res.status(201).set("Authorization", `Bearer ${token}`).json({
-          message: "Succes",
+          message: "Success",
         });
       }
     });
@@ -57,44 +56,4 @@ async function forgetPassword(req, res, next) {
   }
 }
 
-// async function login(req, res, next){
-//     const userData = req.body;
-// //validating data credentials
-//     let { error } = loginSchema.validate(userData);
-//     if (error) return res.status(400).json({message: error.details[0].message});
-
-//     //checking if the user already exists
-//     let user = await prisma.User.findUnique({
-//         where: { username:  userData.username },
-//     });
-//     if(!user)
-//         return res.status(400).json({message:'Username or password is incorrect'});
-//     try{
-//         const match = await bcrypt.compare(userData.password, user.password);
-//         if(! match){
-//             return res.status(400).json({message:'Username or password is incorrect'});
-//         };
-
-//     ///JWT
-//         const token = jwt.sign(
-//             { userId: user.id,
-//                 username : user.username,
-//                 email: user.email,
-//                  isAdmin: user.isAdmin,
-//                   businessId: user.businessId },
-//             process.env.JWT_SECRET,
-//             { expiresIn: process.env.JWT_EXPIRATION || '1h'  }
-//         );
-
-//         res
-//             .status(201)
-//             .set('Authorization', `Bearer ${token}`) // Attach the token to the header
-//             .json({
-//                 message: 'Login successfully'
-//         });
-//     }
-//     catch(ex){
-//         next(ex);
-//     }
-// }
 module.exports = { forgetPassword };
