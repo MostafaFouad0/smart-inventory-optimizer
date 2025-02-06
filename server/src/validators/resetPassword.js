@@ -1,5 +1,4 @@
 const Joi = require("joi");
-const base = require("./userBase");
 
 const resetPasswordSchema = Joi.object({
   password: Joi.string().min(8).required().messages({

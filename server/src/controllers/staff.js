@@ -9,9 +9,10 @@ async function createStaff(req, res, next) {
     if (!staffData) return res.status(400).json({ message: "Missing data" });
 
     //validating data credentials
-    let { error } = staffSchema.validate(staffData);
+    let { value, error } = staffSchema.validate(staffData);
     if (error)
       return res.status(400).json({ message: error.details[0].message });
+    staffData.phoneNumber = value.phoneNumber;
 
     //checking if the user already exists
     const existingUser = await prisma.User.findFirst({

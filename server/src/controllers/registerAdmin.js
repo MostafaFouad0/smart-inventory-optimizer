@@ -10,9 +10,10 @@ async function createAdmin(req, res, next) {
       return res.status(400).json({ message: "Missing data" });
 
     //validating data credentials
-    let { error } = adminSchema.validate(adminData);
+    let { value, error } = adminSchema.validate(adminData);
     if (error)
       return res.status(400).json({ message: error.details[0].message });
+    adminData.phoneNumber = value.phoneNumber;
 
     error = businessSchema.validate(businessData).error;
     if (error)
