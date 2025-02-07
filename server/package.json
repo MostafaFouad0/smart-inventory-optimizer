@@ -37,7 +37,9 @@
     "joi": "^17.13.3",
     "jsonwebtoken": "^9.0.2",
     "nodemailer": "^6.10.0",
-    "winston": "^3.17.0"
+    "swagger-ui-express": "^5.0.1",
+    "winston": "^3.17.0",
+    "yamljs": "^0.3.0"
   },
   "type": "commonjs"
 }
