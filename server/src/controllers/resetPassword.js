@@ -1,6 +1,6 @@
 const resetPasswordSchema = require("../validators/resetPassword");
-const bcrypt = require("bcrypt");
 const prisma = require("../../prisma/main/client");
+const { hashPassword } = require("../utils/auth");
 
 async function resetPassword(req, res, next) {
   const userData = req.body;
@@ -14,9 +14,7 @@ async function resetPassword(req, res, next) {
     const password = req.body.password;
 
     //hasing the password
-    const saltRounds = 10;
-    const hashedPassword = await bcrypt.hash(password, saltRounds);
-
+    const hashedPassword = await hashPassword(password);
     const updatedUser = await prisma.user.update({
       where: { id: id },
       data: { password: hashedPassword },
