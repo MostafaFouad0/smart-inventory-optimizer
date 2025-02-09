@@ -6,8 +6,6 @@ async function createSignedUploadURL(path, expiresIn = 180) {
     .createSignedUploadUrl(path, expiresIn, {
       upsert: true,
     });
-
-  if (error) throw error;
-  return data;
+  return { data, error };
 }
 module.exports = createSignedUploadURL;

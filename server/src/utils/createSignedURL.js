@@ -4,7 +4,6 @@ async function createSignedURL(path, expiresIn = 180) {
   const { data, error } = await client.storage
     .from("ProfileImage")
     .createSignedUrl(path, expiresIn);
-  if (error) throw error;
-  return data;
+  return { data, error };
 }
 module.exports = createSignedURL;
