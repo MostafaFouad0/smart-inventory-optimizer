@@ -10,4 +10,6 @@ module.exports = function () {
     throw new Error("Data warehouse connection string is not defined");
   if (!process.env.DWH_DIRECT_URL)
     throw new Error("Data warehouse direct URL is not defined");
+  if (!process.env.BUCKET_URL) throw new Error("Bucket URL is not defined");
+  if (!process.env.BUCKET_KEY) throw new Error("Bucket key is not defined");
 };
