@@ -9,7 +9,7 @@ async function uploadURL(req, res, next) {
       return res.status(500).json({
         message: `could not generate signed upload URL ${error.message}`,
       });
-
+    
     res.status(200).json({ URL: data.signedUrl, token: data.token });
   } catch (ex) {
     next(ex);
