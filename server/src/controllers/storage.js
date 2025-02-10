@@ -6,7 +6,7 @@ async function uploadURL(req, res, next) {
   try {
     const { data, error } = await createSignedUploadURL(path);
     if (error)
-      return res.status(500).json({ message: "Image could not be uploaded" });
+      return res.status(500).json({ message: "could not generate signed upload URL" });
 
     res.status(200).json({ URL: data.signedUrl, token: data.token });
   } catch (ex) {
