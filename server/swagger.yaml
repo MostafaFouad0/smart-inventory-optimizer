@@ -143,10 +143,10 @@ paths:
               properties:
                 username:
                   type: string
-                  example: "admin_user"
+                  example: "admin"
                 password:
                   type: string
-                  example: "securePassword123"
+                  example: "12345678"
       responses:
         "200":
           description: Successfully authenticated
@@ -296,9 +296,6 @@ paths:
                     description:
                       type: string
                       example: "A sample business description"
-                    image:
-                      type: null
-                      example: null
       responses:
         "201":
           description: Admin and business created successfully
@@ -594,6 +591,32 @@ paths:
           description: Forbidden - Access denied
         "500":
           description: Internal Server Error - Could not generate signed URL
+  /api/storage/delete:
+    delete:
+      summary: Delete profile image
+      description: Deletes the profile image for the authenticated business.
+      operationId: deleteURL
+      tags:
+        - Storage
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Object deleted successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "object deleted successfully"
+        "401":
+          description: Unauthorized - Authentication token is missing or invalid
+        "403":
+          description: Forbidden - Access denied
+        "500":
+          description: Internal Server Error - Could not delete object
 
 components:
   securitySchemes:

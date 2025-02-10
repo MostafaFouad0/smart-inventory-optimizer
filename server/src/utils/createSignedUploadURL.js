@@ -3,9 +3,7 @@ const client = require("./bucketClient");
 async function createSignedUploadURL(path, expiresIn = 180) {
   const { data, error } = await client.storage
     .from("ProfileImage")
-    .createSignedUploadUrl(path, expiresIn, {
-      upsert: true,
-    });
+    .createSignedUploadUrl(path, expiresIn);
   return { data, error };
 }
 module.exports = createSignedUploadURL;
