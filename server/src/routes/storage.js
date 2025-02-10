@@ -6,5 +6,10 @@ const authorize = require("../middlewares/authorizate");
 
 router.get("/access", [authenticate, authorize], storageController.accessURL);
 router.get("/upload", [authenticate, authorize], storageController.uploadURL);
+router.delete(
+  "/delete",
+  [authenticate, authorize],
+  storageController.deleteURL
+);
 
 module.exports = router;

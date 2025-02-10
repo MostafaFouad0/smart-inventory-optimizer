@@ -14,7 +14,6 @@ model Business {
   name              String
   establishmentDate DateTime
   description       String?
-  image             String?
   createdAt         DateTime       @default(now())
   User              User[]
   Batch             Batch[]

@@ -4,7 +4,6 @@ const businessSchema = Joi.object({
   name: Joi.string().max(30).required(),
   establishmentDate: Joi.date().required(),
   description: Joi.string(),
-  image: Joi.string().uri(),
 });
 
 module.exports = businessSchema;

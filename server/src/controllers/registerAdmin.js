@@ -51,7 +51,6 @@ async function createAdmin(req, res, next) {
           name: businessData.name,
           establishmentDate: businessData.establishmentDate,
           description: businessData.description,
-          image: businessData.image,
         },
       });
 
