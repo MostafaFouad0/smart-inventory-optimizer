@@ -124,6 +124,477 @@ paths:
         "500":
           description: Internal Server Error
 
+  /api/auth/login:
+    post:
+      summary: Authenticate user and return JWT token
+      description: Authenticates user credentials and returns a JWT token in the Authorization header
+      operationId: login
+      tags:
+        - Authentication
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - username
+                - password
+              properties:
+                username:
+                  type: string
+                  example: "admin_user"
+                password:
+                  type: string
+                  example: "securePassword123"
+      responses:
+        "200":
+          description: Successfully authenticated
+          headers:
+            Authorization:
+              schema:
+                type: string
+              description: JWT token for authenticated requests
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Login successfully"
+        "400":
+          description: Bad Request - Invalid input or incorrect credentials
+        "500":
+          description: Internal Server Error
+
+  /api/auth/forget-password:
+    post:
+      summary: Initiate password reset process
+      description: Sends password reset instructions to the user's email (test implementation returns token)
+      operationId: forgetPassword
+      tags:
+        - Authentication
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - email
+              properties:
+                email:
+                  type: string
+                  format: email
+                  example: "user@example.com"
+      responses:
+        "201":
+          description: Reset instructions sent (test implementation returns token)
+          headers:
+            Authorization:
+              schema:
+                type: string
+              description: JWT token (test implementation only)
+        "404":
+          description: Not Found - Email not registered
+        "500":
+          description: Internal Server Error
+
+  /api/auth/reset-password:
+    post:
+      summary: Reset user password
+      description: Reset user password using a valid JWT token
+      operationId: resetPassword
+      tags:
+        - Authentication
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - password
+              properties:
+                password:
+                  type: string
+                  example: "newSecurePassword123"
+      responses:
+        "200":
+          description: Password reset successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Password updated successfully"
+        "400":
+          description: Bad Request - Invalid input
+        "401":
+          description: Unauthorized - Invalid or missing token
+        "500":
+          description: Internal Server Error
+
+  /api/auth/register:
+    post:
+      summary: Register new admin and business
+      description: Creates a new business entity and its admin user
+      operationId: createAdmin
+      tags:
+        - Authentication
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - admin
+                - business
+              properties:
+                admin:
+                  type: object
+                  required:
+                    - email
+                    - username
+                    - password
+                  properties:
+                    name:
+                      type: string
+                      example: "John Doe"
+                    email:
+                      type: string
+                      format: email
+                      example: "admin@business.com"
+                    username:
+                      type: string
+                      example: "admin_user"
+                    password:
+                      type: string
+                      example: "securePassword123"
+                    phoneNumber:
+                      type: string
+                      example: "+1234567890"
+                business:
+                  type: object
+                  required:
+                    - name
+                    - establishmentDate
+                  properties:
+                    name:
+                      type: string
+                      example: "Awesome Business LLC"
+                    establishmentDate:
+                      type: string
+                      format: date-time
+                      example: "2023-01-01T00:00:00Z"
+                    description:
+                      type: string
+                      example: "A sample business description"
+                    image:
+                      type: null
+                      example: null
+      responses:
+        "201":
+          description: Admin and business created successfully
+          headers:
+            Authorization:
+              schema:
+                type: string
+              description: JWT token for the created admin
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Admin and Business created successfully"
+                  admin:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                      email:
+                        type: string
+                  business:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                      name:
+                        type: string
+        "400":
+          description: Bad Request - Missing data or validation error
+        "500":
+          description: Internal Server Error
+
+  /api/staff:
+    post:
+      summary: Create a new staff member
+      description: Creates a new staff member under the authenticated admin's business.
+      operationId: createStaff
+      tags:
+        - Staff
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                staff:
+                  type: object
+                  required:
+                    - email
+                    - username
+                    - password
+                  properties:
+                    name:
+                      type: string
+                      maxLength: 30
+                      example: "John Doe"
+                    email:
+                      type: string
+                      format: email
+                      example: "john.doe@example.com"
+                    username:
+                      type: string
+                      example: "johndoe"
+                    password:
+                      type: string
+                      minLength: 8
+                      example: "secretPassword123"
+                    phoneNumber:
+                      type: string
+                      example: "+1234567890"
+              required:
+                - staff
+      responses:
+        "201":
+          description: Staff created successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Staff created successfully"
+                  Staff:
+                    type: object
+                    properties:
+                      id:
+                        type: integer
+                        example: 1
+                      email:
+                        type: string
+                        format: email
+                        example: "john.doe@example.com"
+                  business:
+                    type: object
+                    properties:
+                      id:
+                        type: integer
+                        example: 10
+        "400":
+          description: Bad Request - Missing or invalid data
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "User with this email already exists"
+        "401":
+          description: Unauthorized - Authentication token is missing or invalid
+        "403":
+          description: Forbidden - Access denied
+        "500":
+          description: Internal Server Error
+
+    get:
+      summary: List staff members
+      description: Returns a paginated list of staff members for the authenticated business.
+      operationId: listStaff
+      tags:
+        - Staff
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: page
+          in: query
+          description: Page number for pagination (default is 1)
+          required: false
+          schema:
+            type: integer
+            default: 1
+        - name: orderBy
+          in: query
+          description: Field to sort results by (default is name)
+          required: false
+          schema:
+            type: string
+            default: name
+        - name: sortOrder
+          in: query
+          description: Sort order ("asc" for ascending, "desc" for descending; default is asc)
+          required: false
+          schema:
+            type: string
+            enum: [asc, desc]
+            default: asc
+      responses:
+        "200":
+          description: Successful response with a list of staff members
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Success"
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: integer
+                          example: 1
+                        name:
+                          type: string
+                          example: "John Doe"
+                        email:
+                          type: string
+                          format: email
+                          example: "john.doe@example.com"
+                        username:
+                          type: string
+                          example: "johndoe"
+                        phoneNumber:
+                          type: string
+                          example: "+1234567890"
+                        createdAt:
+                          type: string
+                          format: date-time
+                          example: "2023-01-01T00:00:00Z"
+        "400":
+          description: Bad Request - Invalid query parameters
+        "401":
+          description: Unauthorized - Authentication token is missing or invalid
+        "403":
+          description: Forbidden - Access denied
+        "500":
+          description: Internal Server Error
+
+  /api/staff/{userId}:
+    delete:
+      summary: Delete a staff member
+      description: Deletes the specified staff member from the authenticated business.
+      operationId: deleteStaff
+      tags:
+        - Staff
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: userId
+          in: path
+          description: The ID of the staff member to delete
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Staff member deleted successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "successfully deleted staff with id: 1"
+        "400":
+          description: Bad Request - Invalid user ID or missing data
+        "401":
+          description: Unauthorized - Authentication token is missing or invalid
+        "403":
+          description: Forbidden - Access denied
+        "404":
+          description: Not Found - Staff member not found
+        "500":
+          description: Internal Server Error
+
+  /api/storage/upload:
+    get:
+      summary: Generate a signed upload URL
+      description: Generates a signed URL for uploading an image for the authenticated business.
+      operationId: getSignedUploadURL
+      tags:
+        - Storage
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Signed upload URL generated successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  URL:
+                    type: string
+                    description: Signed URL for uploading the image
+                    example: "https://example.com/upload/signedUrl"
+                  token:
+                    type: string
+                    description: Token associated with the signed URL
+                    example: "abc123token"
+        "401":
+          description: Unauthorized - Authentication token is missing or invalid
+        "403":
+          description: Forbidden - Access denied
+        "500":
+          description: Internal Server Error - Image could not be uploaded
+
+  /api/storage/access:
+    get:
+      summary: Generate a signed access URL
+      description: Generates a signed URL for accessing the business profile image.
+      operationId: getSignedAccessURL
+      tags:
+        - Storage
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Signed access URL generated successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  URL:
+                    type: string
+                    description: Signed URL for accessing the image
+                    example: "https://example.com/access/signedUrl"
+        "401":
+          description: Unauthorized - Authentication token is missing or invalid
+        "403":
+          description: Forbidden - Access denied
+        "500":
+          description: Internal Server Error - Could not generate signed URL
+
 components:
   securitySchemes:
     bearerAuth:
