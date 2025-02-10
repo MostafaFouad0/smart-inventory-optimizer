@@ -13,7 +13,11 @@ const storageRouter = require("../routes/storage");
 const CSS_URL =
   "https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/4.1.0/swagger-ui.min.css";
 module.exports = function (app) {
-  app.use(cors());
+  app.use(
+    cors({
+      exposedHeaders: ["Authorization"],
+    })
+  );
   app.use(express.json());
   app.use(
     endpoints.API_DOCS,
