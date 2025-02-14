@@ -1,17 +1,17 @@
 const winston = require("winston");
-const rmq = require("./rabbitmq");
 
 const sendMessage = async (queue, message) => {
   try {
-    const { channel } = await rmq.connect();
+    const channel = await global.rmq.createChannel();
 
     await channel.assertQueue(queue, { durable: true });
     channel.sendToQueue(queue, Buffer.from(JSON.stringify(message)));
-
-    winston.info(`Sent message to ${queue}:`, message);
+    await channel.close();
+    if (process.env.NODE_ENV === "development") {
+      winston.debug(`Sent message to ${queue}:`, message);
+    }
   } catch (error) {
     winston.error("Error sending message to RabbitMQ:", error);
-    throw error;
   }
 };
 
