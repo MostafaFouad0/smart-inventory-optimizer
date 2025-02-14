@@ -1,4 +1,4 @@
-const client = require("./bucketClient");
+const client = require("../services/storage/bucketClient");
 const { Readable } = require("stream");
 
 const readCSV = async (bucketName, path) => {
