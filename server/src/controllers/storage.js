@@ -1,11 +1,11 @@
-const createSignedUploadURL = require("../utils/createSignedUploadURL");
-const createSignedURL = require("../utils/createSignedURL");
-const deleteProfileImage = require("../utils/deleteProfileImage");
+const createSignedUploadURL = require("../services/storage/createSignedUploadURL");
+const createSignedURL = require("../services/storage/createSignedURL");
+const deleteProfileImage = require("../services/storage/deleteFile");
 
 async function uploadURL(req, res, next) {
   const path = req.user.businessId + ".jpg";
   try {
-    const { data, error } = await createSignedUploadURL(path);
+    const { data, error } = await createSignedUploadURL(path, "ProfileImage");
     if (error)
       return res.status(500).json({
         message: `could not generate signed upload URL, ${error.message}`,
@@ -20,7 +20,7 @@ async function uploadURL(req, res, next) {
 async function accessURL(req, res, next) {
   const path = req.user.businessId + ".jpg";
   try {
-    const { data, error } = await createSignedURL(path);
+    const { data, error } = await createSignedURL(path, "ProfileImage");
     if (error)
       if (error.message === "Object not found")
         return res.status(404).json({ message: "Object not found" });
@@ -37,7 +37,7 @@ async function accessURL(req, res, next) {
 async function deleteURL(req, res, next) {
   const path = req.user.businessId + ".jpg";
   try {
-    const { error } = await deleteProfileImage(path);
+    const { error } = await deleteProfileImage(path, "ProfileImage");
     if (error)
       return res.status(500).json({
         message: `could not delete object, ${error.message}`,
