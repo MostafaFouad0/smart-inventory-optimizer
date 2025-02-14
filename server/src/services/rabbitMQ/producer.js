@@ -1,8 +1,9 @@
 const winston = require("winston");
+const { createChannel } = require("./rabbitmq");
 
 const sendMessage = async (queue, message) => {
   try {
-    const channel = await global.rmq.createChannel();
+    const channel = await createChannel();
 
     await channel.assertQueue(queue, { durable: true });
     channel.sendToQueue(queue, Buffer.from(JSON.stringify(message)));
