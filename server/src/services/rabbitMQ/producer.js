@@ -1,5 +1,5 @@
 const winston = require("winston");
-const { createChannel } = require("./rabbitmq");
+const { createChannel } = require("./rabbitMQ");
 
 const sendMessage = async (queue, message) => {
   try {
