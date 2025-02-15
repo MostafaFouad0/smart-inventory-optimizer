@@ -27,7 +27,6 @@ const purchasesConsumer = async () => {
             });
             if (data.badRows.length > 0) {
               changeStatus(message.id, "Failed");
-              channel.ack(msg);
             } else {
               await insertBatchTransactions(data, message);
               changeStatus(message.id, "Done");
