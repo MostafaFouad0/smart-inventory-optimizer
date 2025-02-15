@@ -33,7 +33,7 @@ const purchasesConsumer = async () => {
             }
             channel.ack(msg);
           } catch (error) {
-            console.error("Error processing message:", error);
+            winston.error("Error processing message:", error);
             changeStatus(message.id, "Failed");
             channel.nack(msg, false, false);
           }
