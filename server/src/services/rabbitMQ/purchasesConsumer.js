@@ -26,7 +26,7 @@ const purchasesConsumer = async () => {
               businessId: message.businessId,
             });
             if (data.badRows.length > 0) {
-              changeStatus(message.id, "Failed");
+              await changeStatus(message.id, "Failed");
             } else {
               await insertBatchTransactions(data, message);
               changeStatus(message.id, "Done");
