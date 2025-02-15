@@ -29,7 +29,7 @@ const purchasesConsumer = async () => {
               await changeStatus(message.id, "Failed");
             } else {
               await insertBatchTransactions(data, message);
-              changeStatus(message.id, "Done");
+              await changeStatus(message.id, "Done");
             }
             channel.ack(msg);
           } catch (error) {
