@@ -20,7 +20,7 @@ const purchasesConsumer = async () => {
         if (msg !== null) {
           try {
             const message = JSON.parse(msg);
-            changeStatus(message.id, "Processing");
+            await changeStatus(message.id, "Processing");
             const stream = await readCSV(message.bucketName, message.fileName);
             const data = await validatePurchases(stream, {
               businessId: message.businessId,
