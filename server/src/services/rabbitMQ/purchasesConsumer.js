@@ -45,6 +45,8 @@ const purchasesConsumer = async () => {
     );
   } catch (error) {
     winston.error("Error in purchases consumer:", error);
+  }finally {
+    if (channel) await channel.close();
   }
 };
 
