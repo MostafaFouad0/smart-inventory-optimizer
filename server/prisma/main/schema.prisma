@@ -73,7 +73,7 @@ model Category {
 
 model Product {
   id               Int       @id @default(autoincrement())
-  name             String    @unique
+  name             String
   categoryRelation Category? @relation(fields: [categoryId], references: [id])
   categoryId       Int?
   Batch            Batch[]
