@@ -41,6 +41,7 @@ model CSVStatus {
   path             String
   businessRelation Business @relation(fields: [businessId], references: [id])
   businessId       String
+  errors           String?
 }
 
 model Notification {
@@ -57,7 +58,7 @@ model Transaction {
   date          DateTime @default(now())
   amount        Int
   discount      Decimal  @default(0.0)
-  batchRelation Batch    @relation(fields: [batchId], references: [id])
+  batchRelation Batch    @relation(fields: [batchId], references: [generatedId])
   batchId       Int
 }
 
@@ -71,15 +72,16 @@ model Category {
 }
 
 model Product {
-  id               Int      @id @default(autoincrement())
-  name             String   @unique
-  categoryRelation Category @relation(fields: [categoryId], references: [id])
-  categoryId       Int
+  id               Int       @id @default(autoincrement())
+  name             String    @unique
+  categoryRelation Category? @relation(fields: [categoryId], references: [id])
+  categoryId       Int?
   Batch            Batch[]
 }
 
 model Batch {
-  id               Int           @id @default(autoincrement())
+  generatedId      Int           @id @default(autoincrement())
+  id               Int
   expiryDate       DateTime
   sellingPrice     Int
   costOfGoods      Int
