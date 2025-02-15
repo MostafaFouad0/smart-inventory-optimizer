@@ -44,7 +44,7 @@ const purchasesConsumer = async () => {
       }
     );
   } catch (error) {
-    console.error("Error in purchases consumer:", error);
+    winston.error("Error in purchases consumer:", error);
   }
 };
 
