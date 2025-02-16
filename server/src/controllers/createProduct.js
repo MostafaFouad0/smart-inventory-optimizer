@@ -3,7 +3,7 @@ const mainClient = require("../../prisma/main/client");
 const createProduct = async (req, res) => {
   const { name, hasExpirationDate, categoryId } = req.body;
 
-  const name_exists = await mainClient.batch.findFirst({
+  const name_exists = await mainClient.product.findFirst({
     where: {
       AND: [
         {
