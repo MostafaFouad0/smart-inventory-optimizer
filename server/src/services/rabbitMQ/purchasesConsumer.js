@@ -20,22 +20,21 @@ const purchasesConsumer = async () => {
         if (msg !== null) {
           try {
             const message = JSON.parse(msg);
-            changeStatus(message.id, "Processing");
+            await changeStatus(message.id, "Processing");
             const stream = await readCSV(message.bucketName, message.fileName);
             const data = await validatePurchases(stream, {
               businessId: message.businessId,
             });
             if (data.badRows.length > 0) {
-              changeStatus(message.id, "Failed");
-              channel.ack(msg);
+              await changeStatus(message.id, "Failed");
             } else {
               await insertBatchTransactions(data, message);
-              changeStatus(message.id, "Done");
+              await changeStatus(message.id, "Done");
             }
             channel.ack(msg);
           } catch (error) {
-            console.error("Error processing message:", error);
-            changeStatus(message.id, "Failed");
+            winston.error("Error processing message:", error);
+            await changeStatus(message.id, "Failed");
             channel.nack(msg, false, false);
           }
         }
@@ -45,7 +44,9 @@ const purchasesConsumer = async () => {
       }
     );
   } catch (error) {
-    console.error("Error in purchases consumer:", error);
+    winston.error("Error in purchases consumer:", error);
+  }finally {
+    if (channel) await channel.close();
   }
 };
 
