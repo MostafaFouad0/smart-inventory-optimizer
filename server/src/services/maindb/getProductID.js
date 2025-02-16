@@ -8,11 +8,11 @@ module.exports = async (productName, businessID) => {
         businessId: businessID,
       },
       select: {
-        Id: true,
+        id: true,
       },
     });
 
-    return product?.Id || null;
+    return product?.id || null;
   } catch (error) {
     throw new Error(`Error fetching product ID: ${error.message}`);
   }
