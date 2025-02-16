@@ -6,7 +6,7 @@ const purchasesSchema = require("./purchasesJoiSchema");
 const validatePurchases = async (readableStream, options) => {
   const badRows = [];
   const goodRows = [];
-  rowNumber = 0;
+  let rowNumber = 0;
   for await (const row of readableStream.pipe(csv())) {
     rowNumber++;
     try {
