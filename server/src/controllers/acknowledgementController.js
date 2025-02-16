@@ -16,7 +16,6 @@ const acknowledgement = async (req, res) => {
     businessId: req.user.businessId,
     uploadedDate: new Date().toISOString(),
   };
-
   const err = await sendMessageToQueue(type, message);
 
   if (err)

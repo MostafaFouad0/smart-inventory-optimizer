@@ -1,34 +1,46 @@
 const client = require("../../../prisma/main/client");
+const getId = require("./getBatchGenId");
 const getProductID = require("./getProductID");
-
+///TODO: try to optimize as we did in the purchases transaction
 const insertSalesTransaction = async (data, message) => {
-  const salesTransactions = data.goodRows.map((row) => ({
-    batchId: row.data.batchId,
-    date: row.data.date,
-    amount: row.data.amount,
-    discount: row.data.discount,
-  }));
-
   await client.$transaction(async (prisma) => {
-    // For each sale row, update the corresponding batch’s quantities
     for (const row of data.goodRows) {
-      const saleAmount = row.data.amount;
+      const saleAmount = +row.data.amount;
+
+      // Get product ID first
+      const productId = await getProductID(
+        row.data.productName,
+        message.businessId
+      );
+
+      // Get generated batch ID
+      const generatedId = await getId(row.data.batchId, productId);
+
+      if (!generatedId) {
+        throw new Error(
+          `Batch not found for batchId: ${row.data.batchId} and productId: ${productId}`
+        );
+      }
+
+      // Update batch quantities
       await prisma.batch.update({
-        where: {
-          id: row.data.batchId,
-          productId: await getProductID(
-            row.data.productName,
-            message.businessId
-          ),
-        },
+        where: { generatedId },
         data: {
           remQuantity: { decrement: saleAmount },
           soldQuantity: { increment: saleAmount },
         },
       });
+
+      // Insert transaction with the correct batchId (generatedId)
+      await prisma.transaction.create({
+        data: {
+          batchId: generatedId, // Use generatedId as foreign key
+          date: row.data.date,
+          amount: -saleAmount,
+          discount: +row.data.discount,
+        },
+      });
     }
-    // Insert the sales transactions into the Transaction table
-    await prisma.transaction.createMany({ data: salesTransactions });
   });
 };
 

@@ -2,7 +2,7 @@ const Joi = require("joi");
 const {
   isPresent,
   checkUniqueness,
-} = require("../utils/dbProductJoiValidator");
+} = require("../utils/customPurchaseJoiValidator");
 
 const purchasesSchema = Joi.object({
   batchId: Joi.number().required().messages({

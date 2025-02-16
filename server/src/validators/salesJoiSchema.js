@@ -1,6 +1,7 @@
-// validators/salesJoiSchema.js
 const Joi = require("joi");
-const { checkBatchAndAmount } = require("../utils/dbSaleJoiValidator");
+const {
+  salesTransactionValidator,
+} = require("../utils/customSaleJoiValidator");
 
 const salesSchema = Joi.object({
   batchId: Joi.number().required().messages({
@@ -26,6 +27,6 @@ const salesSchema = Joi.object({
     "number.min": "Discount must be at least 0.",
     "number.max": "Discount must be at most 100.",
   }),
-}).external(checkBatchAndAmount); //TODO: implement this function (it should check if the batchId exists and if the amount is less than or equal to the quantity)
+}).external(salesTransactionValidator);
 
 module.exports = salesSchema;

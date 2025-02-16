@@ -1,40 +1,45 @@
 const { createChannel } = require("./rabbitMQ");
 const readCSV = require("../../utils/CSVParser");
 const validatePurchases = require("../../validators/purchasesCSValidator");
-const insertBatchTransactions = require("../maindb/insertBatchTransactions");
-const client = require("../../../prisma/main/client");
-const changeStatus = require("../maindb/changeStatus");
+const insertPurchasesTransactions = require("../maindb/insertPurchasesTransactions");
+const { updateCsvStatus } = require("../maindb/csvStatus");
 const winston = require("winston");
-
+///TODO: investigate why the channel closes on its own
 const purchasesConsumer = async () => {
   let channel;
   try {
     channel = await createChannel();
     const queue = "purchases";
-
     await channel.assertQueue(queue, { durable: true });
     winston.info("Purchases consumer started successfully...");
     await channel.consume(
       queue,
       async (msg) => {
         if (msg !== null) {
+          let message;
           try {
-            const message = JSON.parse(msg);
-            await changeStatus(message.id, "Processing");
+            ///parse the message
+            message = JSON.parse(msg.content.toString());
+            await updateCsvStatus(message.id, "Processing");
+            ///parse the CSV file
             const stream = await readCSV(message.bucketName, message.fileName);
+            ///validate the CSV file
             const data = await validatePurchases(stream, {
-              businessId: message.businessId,
+              context: { businessId: message.businessId },
             });
+            //check final state and push to database
             if (data.badRows.length > 0) {
-              await changeStatus(message.id, "Failed");
+              await updateCsvStatus(message.id, "Failed", data.badRows);
             } else {
-              await insertBatchTransactions(data, message);
-              await changeStatus(message.id, "Done");
+              await insertPurchasesTransactions(data);
+              await updateCsvStatus(message.id, "Done");
             }
             channel.ack(msg);
           } catch (error) {
-            winston.error("Error processing message:", error);
-            await changeStatus(message.id, "Failed");
+            winston.error("Error processing purchases message:", error);
+            await updateCsvStatus(message.id, "Failed", {
+              error: "Error processing purchases message:",
+            });
             channel.nack(msg, false, false);
           }
         }
@@ -45,8 +50,6 @@ const purchasesConsumer = async () => {
     );
   } catch (error) {
     winston.error("Error in purchases consumer:", error);
-  }finally {
-    if (channel) await channel.close();
   }
 };
 
