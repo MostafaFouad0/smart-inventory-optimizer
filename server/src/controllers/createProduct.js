@@ -1,7 +1,7 @@
 const mainClient = require("../../prisma/main/client");
 
 const createProduct = async (req, res) => {
-  const { name, hasExpirationDate, categoryId } = req.body;
+  const { name, categoryId } = req.body;
 
   const name_exists = await mainClient.product.findFirst({
     where: {
@@ -36,7 +36,6 @@ const createProduct = async (req, res) => {
     const product = await mainClient.product.create({
       data: {
         name,
-        hasExpirationDate,
         category: {
           connect: {
             id: categoryId,
